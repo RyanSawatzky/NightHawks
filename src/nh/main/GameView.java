@@ -1,12 +1,14 @@
 package nh.main;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.util.List;
 import nh.hex.Map;
 import nh.hex.OffsetCoordinate;
 import nh.util.DoublePoint;
+import nh.util.LongDimension;
 import nh.util.LongRectangle;
 
 public class GameView
@@ -17,7 +19,7 @@ public class GameView
    // Scroll Info
    private DoublePoint viewCenter;
    private DoublePoint viewOrigin;
-   private LongRectangle viewRect;
+   private LongDimension viewSize;
 
    // Zoom Info
    private int hexSize = 25;
@@ -27,8 +29,6 @@ public class GameView
    {
       this.map = map;
       viewCenter = new DoublePoint(0, 0);
-      viewOrigin = new DoublePoint(0, 0);
-      viewRect = new LongRectangle(0, 0, 0, 0);
    }
 
    public void draw(DrawInfo d)
@@ -41,13 +41,21 @@ public class GameView
       drawMouseHoverHex();
    }
 
+   public void scrollView(Dimension movement)
+   {
+      if(viewCenter != null)
+      {
+         System.out.println("Scroll Game View " + movement.toString());
+         viewCenter = new DoublePoint(viewCenter.x - movement.width, viewCenter.y - movement.height);
+      }
+   }
+
    private void calculate()
    {
       int halfWidth = d.size.width / 2;
       int halfHeight = d.size.height / 2;
-      viewCenter = new DoublePoint(0, 0);
-      viewOrigin = new DoublePoint(-halfWidth, -halfHeight);
-      viewRect = new LongRectangle(-halfWidth, -halfHeight, d.size.width, d.size.height);
+      viewOrigin = new DoublePoint(viewCenter.x - halfWidth, viewCenter.y - halfHeight);
+      viewSize = new LongDimension(d.size.width, d.size.height);
       hexMetrics = HexMetrics.create(map.getOrientation(), hexSize);
    }
 
@@ -76,15 +84,9 @@ public class GameView
       d.g.setColor(Color.DARK_GRAY);
 
       OffsetCoordinate originHex = hexMetrics.mapPointToHex(viewOrigin).toOffset(map.getOrientation());
-      OffsetCoordinate extentHex = hexMetrics.mapPointToHex(viewOrigin.x + viewRect.size.width, viewOrigin.y + viewRect.size.height).toOffset(map.getOrientation());
+      OffsetCoordinate extentHex = hexMetrics.mapPointToHex(viewOrigin.x + viewSize.width, viewOrigin.y + viewSize.height).toOffset(map.getOrientation());
       originHex = new OffsetCoordinate(originHex.col - 1, originHex.row - 1);
       extentHex = new OffsetCoordinate(extentHex.col + 1, extentHex.row + 1);
-
-      System.out.println("View Center " + viewCenter.toString());
-      System.out.println("View Origin " + viewOrigin.toString());
-      System.out.println("View Rect " + viewRect.toString());
-      System.out.println("Origin Hex " + originHex.toString());
-      System.out.println("Extent Hex " + extentHex.toString());
 
       for(int row = originHex.row; row <= extentHex.row; row++)
       {
@@ -112,49 +114,9 @@ public class GameView
                drawLine(hexPoints.get(3), hexPoints.get(4));
                drawLine(hexPoints.get(4), hexPoints.get(5));
                drawLine(hexPoints.get(5), hexPoints.get(0));
-
-//               drawLine(center.x - (hexMetrics.width/2), center.y + (hexMetrics.height/4),
-//                        center.x - (hexMetrics.width/2), center.y - (hexMetrics.height/4));
-//               drawLine(center.x - (hexMetrics.width/2), center.y - (hexMetrics.height/4),
-//                        center.x,                        center.y - (hexMetrics.height/2));
-//               drawLine(center.x,                        center.y - (hexMetrics.height/2),
-//                        center.x + (hexMetrics.width/2), center.y - (hexMetrics.height/4));
-
-               if(map.isBorderHex(hex))
-               {
-//                  drawLine(center.x + (hexMetrics.width/2), center.y - (hexMetrics.height/4),
-//                           center.x + (hexMetrics.width/2), center.y + (hexMetrics.height/4));
-//                  drawLine(center.x + (hexMetrics.width/2), center.y + (hexMetrics.height/4),
-//                           center.x,                        center.y + (hexMetrics.height/2));
-//                  drawLine(center.x,                        center.y + (hexMetrics.height/2),
-//                           center.x - (hexMetrics.width/2), center.y + (hexMetrics.height/4));
-               }
             }
          }
       }
-//      // Iterate through hex centers
-//      boolean staggeredRow = false;
-//      boolean staggeredColumn = false;
-//      for(int hexCenterY = minY;
-//              hexCenterY <= maxY;
-//              hexCenterY += hexMetrics.verticalSpace)
-//      {
-//         for(int hexCenterX = minX + (staggeredRow ? hexMetrics.horizontalStagger : 0);
-//                 hexCenterX <= maxX;
-//                 hexCenterX += hexMetrics.horizontalSpace)
-//         {
-//            d.g.drawLine(hexCenterX - (hexMetrics.width/2), hexCenterY + (hexMetrics.height/4),
-//                         hexCenterX - (hexMetrics.width/2), hexCenterY - (hexMetrics.height/4));
-//            d.g.drawLine(hexCenterX - (hexMetrics.width/2), hexCenterY - (hexMetrics.height/4),
-//                         hexCenterX,                        hexCenterY - (hexMetrics.height/2));
-//            d.g.drawLine(hexCenterX,                        hexCenterY - (hexMetrics.height/2),
-//                         hexCenterX + (hexMetrics.width/2), hexCenterY - (hexMetrics.height/4));
-//            
-//            staggeredColumn = !staggeredColumn;
-//         }
-//
-//         staggeredRow = !staggeredRow;
-//      }
    }
    
    private void drawMouseHoverHex()

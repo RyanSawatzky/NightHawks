@@ -2,13 +2,14 @@ package nh.main;
 
 import java.awt.AWTEvent;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -17,9 +18,8 @@ import nh.hex.Orientation;
 
 public class Game
          extends JPanel
-         implements MouseListener
 {
-   private final ConcurrentLinkedQueue<AWTEvent> inputQueue;
+   private final ConcurrentLinkedQueue<ScrollEvent> inputQueue;
    private final GameView gameView;
    
    private Point mouseLocation;
@@ -29,6 +29,11 @@ public class Game
       inputQueue = new ConcurrentLinkedQueue<>();
       gameView = new GameView(new HexMap(Orientation.Horizontal, 10));
       mouseLocation = null;
+
+      GameMouseListener gameMouseListener = new GameMouseListener();
+      addMouseListener(gameMouseListener);
+      addMouseMotionListener(gameMouseListener);
+      addMouseWheelListener(gameMouseListener);
    }
 
    public void loop()
@@ -39,15 +44,10 @@ public class Game
 
    private void processInput()
    {
-      AWTEvent event;
+      ScrollEvent event;
       while((event = inputQueue.poll()) != null)
       {
-         if(event instanceof MouseEvent)
-         {
-            Point location = ((MouseEvent)event).getLocationOnScreen();
-            SwingUtilities.convertPointFromScreen(location, this);
-            mouseLocation = location;
-         }
+         gameView.scrollView(event.getMovement());
       }
    }
 
@@ -68,34 +68,84 @@ public class Game
       g2d.setRenderingHints(oldRenderingHints);
    }
 
-   // Mouse Listener Interfaces
-   @Override
-   public void mouseClicked(MouseEvent e)
+   private class GameMouseListener extends MouseAdapter
    {
-      inputQueue.add(e);
-   }
+      private boolean dragButtonDown = false;
+      private Point mouseLocation = null;
 
-   @Override
-   public void mousePressed(MouseEvent e)
-   {
-      inputQueue.add(e);
-   }
+      @Override
+      public void mouseExited(MouseEvent e)
+      {
+         dragButtonDown = false;
+         mouseLocation = null;
+      }
 
-   @Override
-   public void mouseReleased(MouseEvent e)
-   {
-      inputQueue.add(e);
-   }
+      @Override
+      public void mouseEntered(MouseEvent e)
+      {
+         dragButtonDown = false;
+         mouseLocation = null;
+      }
 
-   @Override
-   public void mouseEntered(MouseEvent e)
-   {
-      inputQueue.add(e);
-   }
+      @Override
+      public void mousePressed(MouseEvent e)
+      {
+         if(e.getButton() == MouseEvent.BUTTON1)
+         {
+            dragButtonDown = true;
+            mouseLocation = e.getPoint();
+         }
+      }
 
-   @Override
-   public void mouseExited(MouseEvent e)
+      @Override
+      public void mouseReleased(MouseEvent e)
+      {
+         if(e.getButton() == MouseEvent.BUTTON1)
+         {
+            System.out.println("mouseReleased");
+            dragButtonDown = false;
+         }
+      }
+      
+      @Override
+      public void mouseMoved(MouseEvent e)
+      {
+      }
+
+      @Override
+      public void mouseDragged(MouseEvent e)
+      {
+         Point newLocation = e.getPoint();
+         if(mouseLocation != null)
+         {
+            inputQueue.add(new ScrollEvent(calculateDelta(mouseLocation, newLocation)));
+         }
+         mouseLocation = newLocation;
+      }
+
+//      @Override
+//      public void mouseWheelMoved(MouseEvent e)
+//      {
+//      }
+      
+      private Dimension calculateDelta(Point oldPoint, Point newPoint)
+      {
+         return new Dimension(newPoint.x - oldPoint.x, newPoint.y - oldPoint.y);
+      }
+   }
+   
+   private static class ScrollEvent
    {
-      inputQueue.add(e);
+      private final Dimension movement;
+      
+      public ScrollEvent(Dimension movement)
+      {
+         this.movement = new Dimension(movement);
+      }
+      
+      public Dimension getMovement()
+      {
+         return movement;
+      }
    }
 }
