@@ -111,18 +111,56 @@ public class HexMetrics
 
    public CubeCoordinate mapPointToHex(double x, double y)
    {
-      if(orientation.isHorizontal())
+      double row = (y / ((height * 3) / 4));
+      double rowFloor = Math.floor(row);
+      double rowRemainder = row - rowFloor;
+      int rowInt = (int)rowFloor;
+
+      if((rowInt & 1) != 0)
+         x -= width / 2;
+
+      double col = x / width;
+      double colFloor = Math.floor(col);
+      double colRemainder = col - colFloor;
+      int colInt = (int)colFloor;
+
+      if(rowRemainder < (1.0d/3.0d))
       {
-         double q = ((x * SquareRootOfThree / 3) - (y / 3)) / hexSize;
-         double r = (y * 2/3) / hexSize;
-         return roundToHex(q, -q-r, r);
+         if(colRemainder < 0.5d)
+         {
+            if(rowRemainder < ((1.0d / 3.0d) - (2.0d * colRemainder / 3.0d)))
+            {
+               if((rowInt & 1) == 0)
+                  colInt--;
+               rowInt--;
+            }
+         }
+         else
+         {
+            colRemainder -= 0.5d;
+            if(rowRemainder < ((2.0d * colRemainder) / 3.0d))
+            {
+               if((rowInt & 1) != 0)
+                  colInt++;
+               rowInt--;
+            }
+         }
       }
-      else
-      {
-         double q = (x * 2/3) / hexSize;
-         double r = ((-x / 3) + (SquareRootOfThree / 3) * y) / hexSize;
-         return roundToHex(q, -1-r, r);
-      }
+
+      return new OffsetCoordinate(colInt, rowInt).toCube(orientation);
+
+//      if(orientation.isHorizontal())
+//      {
+//         double q = ((x * SquareRootOfThree / 3) - (y / 3)) / hexSize;
+//         double r = (y * 2/3) / hexSize;
+//         return roundToHex(q, -q-r, r);
+//      }
+//      else
+//      {
+//         double q = (x * 2/3) / hexSize;
+//         double r = ((-x / 3) + (SquareRootOfThree / 3) * y) / hexSize;
+//         return roundToHex(q, -1-r, r);
+//      }
    }
 
    public CubeCoordinate roundToHex(double x, double y, double z)

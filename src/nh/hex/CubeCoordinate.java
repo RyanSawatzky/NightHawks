@@ -56,4 +56,10 @@ public class CubeCoordinate implements HexCoordinate
       // r = z
       return new AxialCoordinate(x, z);
    }
+   
+   @Override
+   public String toString()
+   {
+      return "(" + x + ", " + y + ", " + z + ")";
+   }
 }

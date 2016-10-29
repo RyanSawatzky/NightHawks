@@ -1,6 +1,5 @@
 package nh.main;
 
-import java.awt.AWTEvent;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -10,9 +9,9 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import nh.hex.HexMap;
 import nh.hex.Orientation;
 
@@ -27,7 +26,7 @@ public class Game
    public Game()
    {
       inputQueue = new ConcurrentLinkedQueue<>();
-      gameView = new GameView(new HexMap(Orientation.Horizontal, 10));
+      gameView = new GameView(new HexMap(Orientation.Horizontal, 3));
       mouseLocation = null;
 
       GameMouseListener gameMouseListener = new GameMouseListener();
@@ -71,7 +70,6 @@ public class Game
    private class GameMouseListener extends MouseAdapter
    {
       private boolean dragButtonDown = false;
-      private Point mouseLocation = null;
 
       @Override
       public void mouseExited(MouseEvent e)
@@ -84,7 +82,7 @@ public class Game
       public void mouseEntered(MouseEvent e)
       {
          dragButtonDown = false;
-         mouseLocation = null;
+         mouseLocation = e.getPoint();
       }
 
       @Override
@@ -102,14 +100,15 @@ public class Game
       {
          if(e.getButton() == MouseEvent.BUTTON1)
          {
-            System.out.println("mouseReleased");
             dragButtonDown = false;
+            mouseLocation = e.getPoint();
          }
       }
       
       @Override
       public void mouseMoved(MouseEvent e)
       {
+         mouseLocation = e.getPoint();
       }
 
       @Override
@@ -123,10 +122,12 @@ public class Game
          mouseLocation = newLocation;
       }
 
-//      @Override
-//      public void mouseWheelMoved(MouseEvent e)
-//      {
-//      }
+      @Override
+      public void mouseWheelMoved(MouseWheelEvent e)
+      {
+         inputQueue.add(null);
+         mouseLocation = e.getPoint();
+      }
       
       private Dimension calculateDelta(Point oldPoint, Point newPoint)
       {

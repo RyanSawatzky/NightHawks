@@ -5,11 +5,11 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.util.List;
+import nh.hex.CubeCoordinate;
 import nh.hex.Map;
 import nh.hex.OffsetCoordinate;
 import nh.util.DoublePoint;
 import nh.util.LongDimension;
-import nh.util.LongRectangle;
 
 public class GameView
 {
@@ -36,18 +36,16 @@ public class GameView
       this.d = d;
 
       calculate();
+      setRenderingHints();
       drawBackground();
+      drawHoverHex();
       drawHexes();
-      drawMouseHoverHex();
    }
 
    public void scrollView(Dimension movement)
    {
       if(viewCenter != null)
-      {
-         System.out.println("Scroll Game View " + movement.toString());
          viewCenter = new DoublePoint(viewCenter.x - movement.width, viewCenter.y - movement.height);
-      }
    }
 
    private void calculate()
@@ -57,6 +55,14 @@ public class GameView
       viewOrigin = new DoublePoint(viewCenter.x - halfWidth, viewCenter.y - halfHeight);
       viewSize = new LongDimension(d.size.width, d.size.height);
       hexMetrics = HexMetrics.create(map.getOrientation(), hexSize);
+   }
+
+   private void setRenderingHints()
+   {
+      d.g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+      d.g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+      d.g.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+      d.g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
    }
 
    private void drawBackground()
@@ -72,15 +78,27 @@ public class GameView
 
    private DoublePoint viewToMap(Point viewPoint)
    {
-      return new DoublePoint(viewPoint.x + viewOrigin.x, viewPoint.y + viewOrigin.y);
+      if(viewOrigin == null)
+         return DoublePoint.fromPoint(viewPoint);
+      else
+         return new DoublePoint(viewPoint.x + viewOrigin.x, viewPoint.y + viewOrigin.y);
+   }
+
+   private void drawHoverHex()
+   {
+      if(d.mouseLocation != null)
+      {
+         d.g.setColor(Color.BLUE);
+
+         DoublePoint mapMouseLocation = viewToMap(d.mouseLocation);
+         CubeCoordinate hex = hexMetrics.mapPointToHex(mapMouseLocation);
+
+         fillHex(hexMetrics.hexPoints(hex));
+      }
    }
 
    private void drawHexes()
    {
-      d.g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-      d.g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-      d.g.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
-      d.g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
       d.g.setColor(Color.DARK_GRAY);
 
       OffsetCoordinate originHex = hexMetrics.mapPointToHex(viewOrigin).toOffset(map.getOrientation());
@@ -104,9 +122,6 @@ public class GameView
             {
                foundAtLeastOneValidHexInRow = true;
 
-               DoublePoint centerInMap = hexMetrics.hexCenter(hex);
-               Point center = mapToView(centerInMap);
-
                List<DoublePoint> hexPoints = hexMetrics.hexPoints(hex);
                drawLine(hexPoints.get(0), hexPoints.get(1));
                drawLine(hexPoints.get(1), hexPoints.get(2));
@@ -119,11 +134,6 @@ public class GameView
       }
    }
    
-   private void drawMouseHoverHex()
-   {
-      
-   }
-   
    private void drawLine(DoublePoint p1, DoublePoint p2)
    {
       drawLine(p1.x, p1.y, p2.x, p2.y);
@@ -132,17 +142,33 @@ public class GameView
    private void drawLine(double x1, double y1, double x2, double y2)
    {
       d.g.drawLine(mapCoordToScreenX(x1),
-                   MapCoordToScreenY(y1),
+                   mapCoordToScreenY(y1),
                    mapCoordToScreenX(x2),
-                   MapCoordToScreenY(y2));
+                   mapCoordToScreenY(y2));
    }
-   
+
+   private void fillHex(List<DoublePoint> hexPoints)
+   {
+      int numberPoints = hexPoints.size();
+      int[] xPoints = new int[numberPoints];
+      int[] yPoints = new int[numberPoints];
+
+      for(int i = 0; i < numberPoints; i++)
+      {
+         DoublePoint point = hexPoints.get(i);
+         xPoints[i] = mapCoordToScreenX(point.x);
+         yPoints[i] = mapCoordToScreenY(point.y);
+      }
+
+      d.g.fillPolygon(xPoints, yPoints, numberPoints);
+   }
+
    private int mapCoordToScreenX(double x)
    {
       return (int)Math.round(x - viewOrigin.x);
    }
    
-   private int MapCoordToScreenY(double y)
+   private int mapCoordToScreenY(double y)
    {
       return (int) Math.round(y - viewOrigin.y);
    }
