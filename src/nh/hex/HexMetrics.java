@@ -5,12 +5,7 @@
  */
 package nh.hex;
 
-import java.util.ArrayList;
 import java.util.List;
-import nh.hex.CubeCoordinate;
-import nh.hex.HexCoordinate;
-import nh.hex.OffsetCoordinate;
-import nh.hex.Orientation;
 import nh.util.DoublePoint;
 
 /**
@@ -50,7 +45,7 @@ public abstract class HexMetrics
       return new CubeCoordinate((int)rx, (int)ry, (int)rz);
    }
 
-   public static final HexMetrics create(Orientation orientation, int hexSize)
+   public static final HexMetrics create(Orientation orientation, double hexSize)
    {
       if(orientation.isHorizontal())
          return new HorizontalHexMetrics(hexSize);

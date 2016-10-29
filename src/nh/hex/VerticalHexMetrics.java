@@ -7,15 +7,15 @@ import nh.util.DoublePoint;
 
 class VerticalHexMetrics extends HexMetrics
 {
-   public final double hexSize;
-   public final double height;
-   public final double width;
-   public final double verticalSpace;
-   public final double horizontalSpace;
-   public final double verticalStagger;
-   public final double horizontalStagger;
+   private final double hexSize;
+   private final double height;
+   private final double width;
+   private final double verticalSpace;
+   private final double horizontalSpace;
+   private final double verticalStagger;
+   private final double horizontalStagger;
 
-   public VerticalHexMetrics(int hexSize)
+   public VerticalHexMetrics(double hexSize)
    {
       this.hexSize = hexSize;
       width = hexSize * 2;
