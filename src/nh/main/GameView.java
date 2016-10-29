@@ -93,7 +93,8 @@ public class GameView
          DoublePoint mapMouseLocation = viewToMap(d.mouseLocation);
          CubeCoordinate hex = hexMetrics.mapPointToHex(mapMouseLocation);
 
-         fillHex(hexMetrics.hexPoints(hex));
+         if(map.isValidHex(hex))
+            fillHex(hexMetrics.hexPoints(hex));
       }
    }
 
