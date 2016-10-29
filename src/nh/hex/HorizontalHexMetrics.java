@@ -26,6 +26,7 @@ class HorizontalHexMetrics extends HexMetrics
       horizontalStagger = (int)Math.round((double)width / 2.0d);
    }
 
+   @Override
    public DoublePoint hexCenter(HexCoordinate hex)
    {
       OffsetCoordinate offset = hex.toOffset(Orientation.Horizontal);
@@ -34,6 +35,7 @@ class HorizontalHexMetrics extends HexMetrics
       return new DoublePoint(x, y);
    }
 
+   @Override
    public List<DoublePoint> hexPoints(HexCoordinate hex)
    {
       OffsetCoordinate offset = hex.toOffset(Orientation.Horizontal);
@@ -74,6 +76,7 @@ class HorizontalHexMetrics extends HexMetrics
       return list;
    }
 
+   @Override
    public CubeCoordinate mapPointToHex(double x, double y)
    {
       double row = (y / ((height * 3) / 4));

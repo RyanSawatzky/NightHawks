@@ -26,7 +26,7 @@ public class Game
    public Game()
    {
       inputQueue = new ConcurrentLinkedQueue<>();
-      gameView = new GameView(new SquareMap(Orientation.Horizontal, 20, 10));
+      gameView = new GameView(new SquareMap(Orientation.Vertical, 20, 10));
       mouseLocation = null;
 
       GameMouseListener gameMouseListener = new GameMouseListener();

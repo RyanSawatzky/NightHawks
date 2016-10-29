@@ -55,6 +55,6 @@ public abstract class HexMetrics
       if(orientation.isHorizontal())
          return new HorizontalHexMetrics(hexSize);
       else
-         throw new IllegalArgumentException();
+         return new VerticalHexMetrics(hexSize);
    }
 }
