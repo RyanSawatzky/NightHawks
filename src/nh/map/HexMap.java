@@ -1,4 +1,8 @@
-package nh.hex;
+package nh.map;
+
+import nh.hex.CubeCoordinate;
+import nh.hex.HexCoordinate;
+import nh.hex.Orientation;
 
 public class HexMap implements Map
 {

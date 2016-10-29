@@ -12,7 +12,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.swing.JPanel;
-import nh.hex.HexMap;
+import nh.map.HexMap;
 import nh.hex.Orientation;
 
 public class Game

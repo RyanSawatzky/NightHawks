@@ -1,4 +1,7 @@
-package nh.hex;
+package nh.map;
+
+import nh.hex.HexCoordinate;
+import nh.hex.Orientation;
 
 public interface Map
 {

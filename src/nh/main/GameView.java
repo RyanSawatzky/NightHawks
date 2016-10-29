@@ -6,7 +6,7 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 import java.util.List;
 import nh.hex.CubeCoordinate;
-import nh.hex.Map;
+import nh.map.Map;
 import nh.hex.OffsetCoordinate;
 import nh.util.DoublePoint;
 import nh.util.LongDimension;
