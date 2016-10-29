@@ -46,7 +46,10 @@ public class Game
       ScrollEvent event;
       while((event = inputQueue.poll()) != null)
       {
-         gameView.scrollView(event.getMovement());
+         if(event instanceof ScrollMovementEvent)
+            gameView.scrollView(((ScrollMovementEvent) event).getMovement());
+         else if(event instanceof ScrollZoomEvent)
+            gameView.zoomView(((ScrollZoomEvent) event).getZoomAdjustment());
       }
    }
 
@@ -117,7 +120,7 @@ public class Game
          Point newLocation = e.getPoint();
          if(mouseLocation != null)
          {
-            inputQueue.add(new ScrollEvent(calculateDelta(mouseLocation, newLocation)));
+            inputQueue.add(new ScrollMovementEvent(calculateDelta(mouseLocation, newLocation)));
          }
          mouseLocation = newLocation;
       }
@@ -125,7 +128,7 @@ public class Game
       @Override
       public void mouseWheelMoved(MouseWheelEvent e)
       {
-         inputQueue.add(null);
+         inputQueue.add(new ScrollZoomEvent(e.getPreciseWheelRotation()));
          mouseLocation = e.getPoint();
       }
       
@@ -137,9 +140,13 @@ public class Game
    
    private static class ScrollEvent
    {
+   }
+   
+   private static class ScrollMovementEvent extends ScrollEvent
+   {
       private final Dimension movement;
       
-      public ScrollEvent(Dimension movement)
+      public ScrollMovementEvent(Dimension movement)
       {
          this.movement = new Dimension(movement);
       }
@@ -147,6 +154,21 @@ public class Game
       public Dimension getMovement()
       {
          return movement;
+      }
+   }
+   
+   private static class ScrollZoomEvent extends ScrollEvent
+   {
+      private final double zoom;
+      
+      public ScrollZoomEvent(double zoom)
+      {
+         this.zoom = zoom;
+      }
+      
+      public double getZoomAdjustment()
+      {
+         return zoom;
       }
    }
 }

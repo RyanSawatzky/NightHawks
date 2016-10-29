@@ -14,6 +14,9 @@ import nh.util.LongDimension;
 
 public class GameView
 {
+   private static final double ZoomMinimum = 32.0d;
+   private static final double ZoomMaximum = 400.0d;
+
    private final Map map;
    private DrawInfo d;
 
@@ -23,7 +26,8 @@ public class GameView
    private LongDimension viewSize;
 
    // Zoom Info
-   private int hexSize = 25;
+   private double hexSize = 25.0d;
+   private double zoom = 100.0d;
    private HexMetrics hexMetrics;
 
    public GameView(Map map)
@@ -47,6 +51,21 @@ public class GameView
    {
       if(viewCenter != null)
          viewCenter = new DoublePoint(viewCenter.x - movement.width, viewCenter.y - movement.height);
+   }
+
+   public void zoomView(double zoomAdjust)
+   {
+      double oldZoom = zoom;
+      zoom += (zoomAdjust * 4);
+      zoom = Math.max(zoom, ZoomMinimum);
+      zoom = Math.min(zoom, ZoomMaximum);
+
+      if((zoom < oldZoom) || (zoom > oldZoom))
+      {
+         hexSize = (25.0d * (zoom / 100.0d));
+         viewCenter = new DoublePoint((viewCenter.x * zoom) / oldZoom,
+                                      (viewCenter.y * zoom) / oldZoom);
+      }
    }
 
    private void calculate()
@@ -101,6 +120,7 @@ public class GameView
 
    private void drawHexes()
    {
+//      d.g.setColor(new Color(25, 25, 25));
       d.g.setColor(Color.DARK_GRAY);
 
       OffsetCoordinate originHex = hexMetrics.mapPointToHex(viewOrigin).toOffset(map.getOrientation());
