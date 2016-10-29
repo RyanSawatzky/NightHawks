@@ -148,19 +148,6 @@ public class HexMetrics
       }
 
       return new OffsetCoordinate(colInt, rowInt).toCube(orientation);
-
-//      if(orientation.isHorizontal())
-//      {
-//         double q = ((x * SquareRootOfThree / 3) - (y / 3)) / hexSize;
-//         double r = (y * 2/3) / hexSize;
-//         return roundToHex(q, -q-r, r);
-//      }
-//      else
-//      {
-//         double q = (x * 2/3) / hexSize;
-//         double r = ((-x / 3) + (SquareRootOfThree / 3) * y) / hexSize;
-//         return roundToHex(q, -1-r, r);
-//      }
    }
 
    public CubeCoordinate roundToHex(double x, double y, double z)
