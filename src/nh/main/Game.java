@@ -12,8 +12,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.swing.JPanel;
-import nh.map.HexMap;
 import nh.hex.Orientation;
+import nh.map.SquareMap;
 
 public class Game
          extends JPanel
@@ -26,7 +26,7 @@ public class Game
    public Game()
    {
       inputQueue = new ConcurrentLinkedQueue<>();
-      gameView = new GameView(new HexMap(Orientation.Horizontal, 3));
+      gameView = new GameView(new SquareMap(Orientation.Horizontal, 20, 10));
       mouseLocation = null;
 
       GameMouseListener gameMouseListener = new GameMouseListener();
