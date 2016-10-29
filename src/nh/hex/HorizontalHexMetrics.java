@@ -10,20 +10,12 @@ class HorizontalHexMetrics extends HexMetrics
    private final double hexSize;
    private final double height;
    private final double width;
-   private final double verticalSpace;
-   private final double horizontalSpace;
-   private final double verticalStagger;
-   private final double horizontalStagger;
 
    public HorizontalHexMetrics(double hexSize)
    {
       this.hexSize = hexSize;
       height = hexSize * 2;
       width = (int)Math.round((SquareRootOfThree/2) * height);
-      verticalSpace = (int)Math.round(((double)height * 3.0d) / 4.0d);
-      horizontalSpace = width;
-      verticalStagger = 0;
-      horizontalStagger = (int)Math.round((double)width / 2.0d);
    }
 
    @Override
