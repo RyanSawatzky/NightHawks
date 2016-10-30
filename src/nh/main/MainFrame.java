@@ -25,6 +25,7 @@ public class MainFrame extends JFrame
       long loopStart = 0L;
       long loopEnd = 0L;
       long loopTime = 10L;
+      double fps = 0L;
       while(exit == false)
       {
          loopStart = System.currentTimeMillis();
@@ -42,11 +43,13 @@ public class MainFrame extends JFrame
                exit = true;
             }
          }
+         fps = 1000.0d / (System.currentTimeMillis() - loopStart);
+         System.out.println("FPS " + fps);
       }
    }
    
    private MainFrame()
    {
-      super("Night Hawks");
+      super("Star Frontiers: Night Hawks");
    }
 }

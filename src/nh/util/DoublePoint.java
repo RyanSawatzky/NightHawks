@@ -7,15 +7,10 @@ public class DoublePoint
    public final double x;
    public final double y;
    
-   public DoublePoint(long x, long y)
+   public DoublePoint(double x, double y)
    {
       this.x = x;
       this.y = y;
-   }
-
-   public DoublePoint(double x, double y)
-   {
-      this(Math.round(x), Math.round(y));
    }
 
    public Point toPoint()

@@ -6,6 +6,7 @@
 package nh.hex;
 
 import java.util.List;
+import nh.map.MapPoint;
 import nh.util.DoublePoint;
 
 /**
@@ -16,8 +17,8 @@ public abstract class HexMetrics
 {
    public static final double SquareRootOfThree = Math.sqrt(3.0d);
 
-   public abstract DoublePoint hexCenter(HexCoordinate hex);
-   public abstract List<DoublePoint> hexPoints(HexCoordinate hex);
+   public abstract MapPoint hexCenter(HexCoordinate hex);
+   public abstract List<MapPoint> hexPoints(HexCoordinate hex);
    public abstract CubeCoordinate mapPointToHex(double x, double y);
 
    public CubeCoordinate mapPointToHex(DoublePoint point)

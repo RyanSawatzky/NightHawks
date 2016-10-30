@@ -3,7 +3,7 @@ package nh.hex;
 import java.util.ArrayList;
 import java.util.List;
 import static nh.hex.HexMetrics.SquareRootOfThree;
-import nh.util.DoublePoint;
+import nh.map.MapPoint;
 
 class HorizontalHexMetrics extends HexMetrics
 {
@@ -19,19 +19,19 @@ class HorizontalHexMetrics extends HexMetrics
    }
 
    @Override
-   public DoublePoint hexCenter(HexCoordinate hex)
+   public MapPoint hexCenter(HexCoordinate hex)
    {
       OffsetCoordinate offset = hex.toOffset(Orientation.Horizontal);
       double x = hexSize * SquareRootOfThree * (offset.col + (0.5d * (offset.row & 1)));
       double y = hexSize * 3.0d/2.0d * offset.row;
-      return new DoublePoint(x, y);
+      return new MapPoint(x, y);
    }
 
    @Override
-   public List<DoublePoint> hexPoints(HexCoordinate hex)
+   public List<MapPoint> hexPoints(HexCoordinate hex)
    {
       OffsetCoordinate offset = hex.toOffset(Orientation.Horizontal);
-      List<DoublePoint> list = new ArrayList<>();
+      List<MapPoint> list = new ArrayList<>();
 
       double leftSide, center, rightSide;
       double tipTop, tipBottom, top, bottom;
@@ -58,12 +58,12 @@ class HorizontalHexMetrics extends HexMetrics
          bottom = tipBottom - (height / 4);
       }
 
-      list.add(new DoublePoint(center, tipTop));
-      list.add(new DoublePoint(rightSide, top));
-      list.add(new DoublePoint(rightSide, bottom));
-      list.add(new DoublePoint(center, tipBottom));
-      list.add(new DoublePoint(leftSide, bottom));
-      list.add(new DoublePoint(leftSide, top));
+      list.add(new MapPoint(center, tipTop));
+      list.add(new MapPoint(rightSide, top));
+      list.add(new MapPoint(rightSide, bottom));
+      list.add(new MapPoint(center, tipBottom));
+      list.add(new MapPoint(leftSide, bottom));
+      list.add(new MapPoint(leftSide, top));
 
       return list;
    }
