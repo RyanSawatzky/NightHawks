@@ -22,37 +22,24 @@ public class GameView
    private static final double ZoomMinimum = 0.320d;
    private static final double ZoomMaximum = 4.0d;
 
-   private final BufferedImage background;
    private final Map map;
    private final MapPoint mapOrigin;
    private final MapPoint mapExtent;
-   private boolean debug;
-   private DrawInfo d;
+   private final HexMetrics hexMetrics;
 
    // Scroll Info
+   private double zoom = 1.0d;
    private MapPoint viewCenterInMap;
    private MapPoint viewOriginInMap;
    private MapPoint viewExtentInMap;
-   private MapPoint minimumViewOriginInMap;
-   private MapPoint maximumViewExtentInMap;
-   private Point backgroundOrigin;
-   private Point backgroundExtent;
 
+   // State
+   private boolean debug;
+   private DrawInfo d;
 
-   // Zoom Info
-   private double zoom = 1.0d;
-   private HexMetrics hexMetrics;
 
    public GameView(Map map)
    {
-      BufferedImage iBackground = null;
-      try
-      {
-         iBackground = ImageIO.read(Map.class.getResource("backgrounds/Starfield.jpg"));
-      }
-      catch(IOException e) {}
-      background = iBackground;
-      
       this.map = map;
       viewOriginInMap = new MapPoint(0, 0);
       viewCenterInMap = new MapPoint(0, 0);
@@ -88,22 +75,14 @@ public class GameView
 
          viewCenterInMap = new MapPoint(Math.min(mapExtent.x, Math.max(mapOrigin.x, viewCenterInMap.x)),
                                   Math.min(mapExtent.y, Math.max(mapOrigin.y, viewCenterInMap.y)));
-//         viewCenter = new MapPoint(viewCenter.x - movement.width, viewCenter.y - movement.height);
       }
    }
 
    public void zoomView(double zoomAdjust)
    {
-//      double oldZoom = zoom;
       zoom -= (zoomAdjust / 25);
       zoom = Math.max(zoom, ZoomMinimum);
       zoom = Math.min(zoom, ZoomMaximum);
-//
-//      if((zoom < oldZoom) || (zoom > oldZoom))
-//      {
-//         viewCenter = new DoublePoint((viewCenter.x * zoom) / oldZoom,
-//                                      (viewCenter.y * zoom) / oldZoom);
-//      }
    }
 
    private void calculate()
@@ -121,26 +100,6 @@ public class GameView
       viewExtent.x += halfWidth;
       viewExtent.y += halfHeight;
       viewExtentInMap = viewToMap(viewExtent);
-
-      // Determine image location and size
-      Point minimumViewOrigin = mapToView(ZoomMinimum, d.location, d.size, mapOrigin, mapOrigin);
-      minimumViewOrigin.x -= (d.size.width / 2);
-      minimumViewOrigin.y -= (d.size.height / 2);
-
-      Point maximumViewExtent = mapToView(ZoomMinimum, d.location, d.size, mapExtent, mapExtent);
-      maximumViewExtent.x += (d.size.width / 2);
-      maximumViewExtent.y += (d.size.height / 2);
-
-      minimumViewOriginInMap = viewToMap(ZoomMinimum, d.location, d.size, mapOrigin, minimumViewOrigin);
-      maximumViewExtentInMap = viewToMap(ZoomMinimum, d.location, d.size, mapExtent, maximumViewExtent);
-
-      double widthScale = background.getWidth() / (maximumViewExtentInMap.x - minimumViewOriginInMap.x);
-      double heightScale = background.getHeight() / (maximumViewExtentInMap.y - minimumViewOriginInMap.y);
-      double backgroundScaleAtLowestZoom = Math.min(widthScale, heightScale);
-
-      backgroundOrigin = new Point(0,0);
-      backgroundExtent = new Point((int)Math.floor(backgroundScaleAtLowestZoom * (maximumViewExtentInMap.x - minimumViewOriginInMap.x)),
-                                   (int)Math.floor(backgroundScaleAtLowestZoom * (maximumViewExtentInMap.y - minimumViewOriginInMap.y)));
    }
 
    private void setRenderingHints()
@@ -155,44 +114,6 @@ public class GameView
    {
       d.g.setColor(Color.BLACK);
       d.g.fillRect(d.location.x, d.location.y, d.size.width, d.size.height);
-
-      DoublePoint viewOriginInBackground = mapToBackground(viewOriginInMap);
-      DoublePoint viewExtentInBackground = mapToBackground(viewExtentInMap);
-      DoublePoint minimumViewOriginInBackground = mapToBackground(minimumViewOriginInMap);
-      DoublePoint maximumViewExtentInBackground = mapToBackground(maximumViewExtentInMap);
-      DoublePoint viewOriginRatioOfBackground = new DoublePoint((viewOriginInBackground.x - minimumViewOriginInBackground.x) / (maximumViewExtentInBackground.x - minimumViewOriginInBackground.x),
-                                                                (viewOriginInBackground.y - minimumViewOriginInBackground.y) / (maximumViewExtentInBackground.y - minimumViewOriginInBackground.y));
-      DoublePoint viewExtentRatioOfBackground = new DoublePoint((viewExtentInBackground.x - minimumViewOriginInBackground.x) / (maximumViewExtentInBackground.x - minimumViewOriginInBackground.x),
-                                                                (viewExtentInBackground.y - minimumViewOriginInBackground.y) / (maximumViewExtentInBackground.y - minimumViewOriginInBackground.y));
-      int backgroundX1 = (int)Math.floor(backgroundExtent.x * viewOriginRatioOfBackground.x);
-      int backgroundX2 = (int)Math.floor(backgroundExtent.x * viewExtentRatioOfBackground.x);
-      int backgroundY1 = (int)Math.floor(backgroundExtent.y * viewOriginRatioOfBackground.y);
-      int backgroundY2 = (int)Math.floor(backgroundExtent.y * viewExtentRatioOfBackground.y);
-
-      Point backgroundOrigin = mapToView(minimumViewOriginInMap);
-      Point backgroundExtent = mapToView(maximumViewExtentInMap);
-//      d.g.drawImage(background,
-//                    d.location.x, d.location.y, d.size.width, d.size.height,
-//                    backgroundX1, backgroundY1, backgroundX2, backgroundY2,
-//                    null);
-   }
-
-   private DoublePoint mapToBackground(MapPoint mapPoint)
-   {
-      return mapToBackground(zoom, d.location, d.size, viewCenterInMap, mapPoint);
-   }
-
-   private static DoublePoint mapToBackground(double zoom,
-                                              Point viewLocation, Dimension viewSize,
-                                              MapPoint viewCenterInMap, MapPoint mapPoint)
-   {
-      double x = (mapPoint.x - viewCenterInMap.x) * (zoom / 10);
-      double y = (mapPoint.y - viewCenterInMap.y) * (zoom / 10);
-
-      x += (viewSize.width / 2) + viewLocation.x;
-      y += (viewSize.height / 2) + viewLocation.y;
-
-      return new DoublePoint(x, y);
    }
 
    private Point mapToView(MapPoint mapPoint)
