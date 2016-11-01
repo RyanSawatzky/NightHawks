@@ -240,13 +240,6 @@ public class GameView
          MapPoint mapMouseLocation = viewToMap(d.mouseLocation);
          CubeCoordinate hex = hexMetrics.mapPointToHex(mapMouseLocation);
 
-         if(debug)
-         {
-            System.out.println("DrawHoverHex() - d.mouseLocation " + d.mouseLocation.toString() + "\n" +
-                               "               - mapMouseLocation " + mapMouseLocation.toString() + "\n" +
-                               "               - hex " + hex.toString() + "\n");
-         }
-
          if(map.isValidHex(hex))
             fillHex(hexMetrics.hexPoints(hex));
       }
