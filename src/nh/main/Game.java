@@ -25,8 +25,11 @@ public class Game
 
    public Game()
    {
+      super.setDoubleBuffered(true);
+      
       inputQueue = new ConcurrentLinkedQueue<>();
-      gameView = new GameView(new HexMap(Orientation.Horizontal, 3));
+//      gameView = new GameView(new SquareMap(Orientation.Horizontal, 10, 10));
+      gameView = new GameView(new HexMap(Orientation.Vertical, 100));
       mouseLocation = null;
 
       GameMouseListener gameMouseListener = new GameMouseListener();
@@ -50,6 +53,8 @@ public class Game
             gameView.scrollView(((ScrollMovementEvent) event).getMovement());
          else if(event instanceof ScrollZoomEvent)
             gameView.zoomView(((ScrollZoomEvent) event).getZoomAdjustment());
+         else if(event instanceof DebugEvent)
+            gameView.setDebug(((DebugEvent) event).value);
       }
    }
 
@@ -95,6 +100,7 @@ public class Game
          {
             dragButtonDown = true;
             mouseLocation = e.getPoint();
+            inputQueue.add(new DebugEvent(true));
          }
       }
 
@@ -105,6 +111,7 @@ public class Game
          {
             dragButtonDown = false;
             mouseLocation = e.getPoint();
+            inputQueue.add(new DebugEvent(false));
          }
       }
       
@@ -140,6 +147,21 @@ public class Game
    
    private static class ScrollEvent
    {
+   }
+   
+   private static class DebugEvent extends ScrollEvent
+   {
+      private final boolean value;
+      
+      public DebugEvent(boolean value)
+      {
+         this.value = value;
+      }
+      
+      public boolean getValue()
+      {
+         return value;
+      }
    }
    
    private static class ScrollMovementEvent extends ScrollEvent

@@ -36,6 +36,7 @@ public class MainFrame extends JFrame
          {
             try
             {
+//               System.out.println("Sleep " + (loopTime - (loopEnd - loopStart)));
                Thread.sleep(loopTime - (loopEnd - loopStart));
             }
             catch(InterruptedException e)
@@ -44,7 +45,7 @@ public class MainFrame extends JFrame
             }
          }
          fps = 1000.0d / (System.currentTimeMillis() - loopStart);
-         System.out.println("FPS " + fps);
+//         System.out.println("FPS " + fps);
       }
    }
    

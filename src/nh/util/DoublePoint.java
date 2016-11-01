@@ -43,6 +43,15 @@ public class DoublePoint
                 (Double.compare(this.y, other.y) == 0);
       }
    }
+
+   @Override
+   public int hashCode()
+   {
+      int hash = 5;
+      hash = 71 * hash + (int) (Double.doubleToLongBits(this.x) ^ (Double.doubleToLongBits(this.x) >>> 32));
+      hash = 71 * hash + (int) (Double.doubleToLongBits(this.y) ^ (Double.doubleToLongBits(this.y) >>> 32));
+      return hash;
+   }
    
    public static Point toPoint(double dX, double dY)
    {

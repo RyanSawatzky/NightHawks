@@ -15,7 +15,7 @@ class HorizontalHexMetrics extends HexMetrics
    {
       this.hexSize = hexSize;
       height = hexSize * 2;
-      width = (int)Math.round((SquareRootOfThree/2) * height);
+      width = (SquareRootOfThree/2) * height;
    }
 
    @Override
@@ -108,5 +108,19 @@ class HorizontalHexMetrics extends HexMetrics
       }
 
       return new OffsetCoordinate(colInt, rowInt).toCube(Orientation.Horizontal);
+   }
+
+   public static void main(String[] args)
+   {
+      HexMetrics metrics = new HorizontalHexMetrics(25.0d);
+      CubeCoordinate cube = new CubeCoordinate(0, -100, 100);
+      List<MapPoint> cubePoints = metrics.hexPoints(cube);
+
+      for(MapPoint point : cubePoints)
+         System.out.println(point.toString());
+
+      MapPoint mousePoint = new MapPoint(2158.0d, 3781.0d);
+      HexCoordinate hex = metrics.mapPointToHex(mousePoint);
+      System.out.println(hex.toString());
    }
 }

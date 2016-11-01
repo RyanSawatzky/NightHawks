@@ -1,7 +1,9 @@
 package nh.map;
 
+import java.util.List;
 import nh.hex.CubeCoordinate;
 import nh.hex.HexCoordinate;
+import nh.hex.HexMetrics;
 import nh.hex.OffsetCoordinate;
 import nh.hex.Orientation;
 
@@ -42,5 +44,34 @@ public class SquareMap implements Map
              (offset.col == (numberCols - 1)) ||
              (offset.row == 0) ||
              (offset.row == (numberRows - 1));
+   }
+
+   @Override
+   public MapPoint getMapOrigin(HexMetrics hexMetrics)
+   {
+      return new MapPoint(0, 0);
+   }
+
+   @Override
+   public MapPoint getMapExtent(HexMetrics hexMetrics)
+   {
+      List<MapPoint> bottomRowPoints = hexMetrics.hexPoints(new OffsetCoordinate(1, numberRows - 1));
+      List<MapPoint> rightRowPoints = hexMetrics.hexPoints(new OffsetCoordinate(numberCols - 1, 1));
+
+      double maxX = 0;
+      double maxY = 0;
+
+      for(MapPoint mapPoint : bottomRowPoints)
+      {
+         if(mapPoint.y > maxY)
+            maxY = mapPoint.y;
+      }
+      for(MapPoint mapPoint : rightRowPoints)
+      {
+         if(mapPoint.x > maxX)
+            maxX = mapPoint.x;
+      }
+      
+      return new MapPoint(maxX, maxY);
    }
 }

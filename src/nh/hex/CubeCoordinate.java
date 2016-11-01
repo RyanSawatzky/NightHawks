@@ -62,4 +62,28 @@ public class CubeCoordinate implements HexCoordinate
    {
       return "(" + x + ", " + y + ", " + z + ")";
    }
+   
+   @Override
+   public boolean equals(Object o)
+   {
+      if(this == o)
+         return true;
+      else if((o == null) || !(o instanceof CubeCoordinate))
+         return false;
+      else
+      {
+         CubeCoordinate other = (CubeCoordinate)o;
+         return (this.x == other.x) && (this.y == other.y) && (this.z == other.z);
+      }
+   }
+
+   @Override
+   public int hashCode()
+   {
+      int hash = 5;
+      hash = 79 * hash + this.x;
+      hash = 79 * hash + this.y;
+      hash = 79 * hash + this.z;
+      return hash;
+   }
 }

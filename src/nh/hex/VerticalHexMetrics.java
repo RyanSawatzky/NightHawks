@@ -15,7 +15,7 @@ class VerticalHexMetrics extends HexMetrics
    {
       this.hexSize = hexSize;
       width = hexSize * 2;
-      height = (int)Math.round((SquareRootOfThree/2) * width);
+      height = (SquareRootOfThree/2) * width;
    }
 
    @Override
