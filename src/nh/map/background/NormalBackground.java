@@ -15,31 +15,28 @@ public class NormalBackground implements Background
 {
    private final Random random;
    private final long rootSeed;
-   private final double rootGridSize;
+   private final int rootGridSize;
    private final BackgroundInfo info;
 
    public NormalBackground()
    {
       random = new Random();
       rootSeed = System.currentTimeMillis();
-      rootGridSize = 100.0d;
+      rootGridSize = 200;
       info = new BackgroundInfo();
    }
 
    @Override
    public void scroll(DoubleDimension movement)
    {
-      DoublePoint oldCenter = new DoublePoint(info.center);
       info.center.x += (movement.width / (info.zoom * 16));
       info.center.y += (movement.height / (info.zoom * 16));
-      System.out.println("Background scroll " + info.center.delta(oldCenter).toString());
    }
    
    @Override
    public void zoom(double zoomAdjust)
    {
       info.zoom = info.zoom + (zoomAdjust / 8);
-      System.out.println("Background zoom " + info.zoom);
    }
 
    private static DoublePoint viewToBackground(ViewInfo viewInfo, BackgroundInfo backInfo, ViewPoint viewPoint)
@@ -92,11 +89,13 @@ public class NormalBackground implements Background
       DoublePoint gridOrigin = new DoublePoint(gridX * rootGridSize,
                                                gridY * rootGridSize);
 
-      int numberStars = (random.nextInt(20) + 1) + (random.nextInt(20) + 1);
+      int numberStars = random.nextInt(53) + random.nextInt(53) + random.nextInt(53) + 1;
       for(int s = 0; s < numberStars; s++)
       {
-         DoublePoint starPoint = new DoublePoint((random.nextDouble() * rootGridSize) + gridOrigin.x,
-                                                 (random.nextDouble() * rootGridSize) + gridOrigin.y);
+         int x = random.nextInt(rootGridSize);
+         int y = random.nextInt(rootGridSize);
+         DoublePoint starPoint = new DoublePoint(x + gridOrigin.x,
+                                                 y + gridOrigin.y);
          int brightness = random.nextInt(192) + 64;
 
          ViewPoint starInView = backgroundToView(viewInfo, info, starPoint);
