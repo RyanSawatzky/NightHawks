@@ -129,11 +129,12 @@ public class GameView
       background.draw(d, viewInfo);
    }
 
+   private final Color HoverColor = new Color(40, 110, 240, 192);
    private void drawHoverHex()
    {
       if(d.mouseLocationInComponent != null)
       {
-         d.g.setColor(Color.BLUE);
+         d.g.setColor(HoverColor);
 
          MapPoint mapMouseLocation = Coordinates.viewToMap(viewInfo, mapInfo, Coordinates.componentToView(d.comp, viewInfo, d.mouseLocationInComponent));
          CubeCoordinate hex = hexMetrics.mapPointToHex(mapMouseLocation);
@@ -143,9 +144,20 @@ public class GameView
       }
    }
 
+   private Color getHexColor()
+   {
+      if(viewInfo.zoom >= 1.0d)
+         return new Color(64, 64, 64, 255);
+      else
+      {
+         double opacity = ((viewInfo.zoom - ZoomMinimum) * (1.0d / (1.0d - ZoomMinimum)) * 128) + 127;
+         return new Color(64, 64, 64, (int)Math.round(opacity));
+      }
+   }
+
    private void drawHexes()
    {
-      d.g.setColor(Color.DARK_GRAY);
+      d.g.setColor(getHexColor());
 
       OffsetCoordinate originHex = hexMetrics.mapPointToHex(Coordinates.viewToMap(viewInfo, mapInfo, viewInfo.origin)).toOffset(map.getOrientation());
       OffsetCoordinate extentHex = hexMetrics.mapPointToHex(Coordinates.viewToMap(viewInfo, mapInfo, viewInfo.extent)).toOffset(map.getOrientation());
