@@ -36,7 +36,7 @@ public class NormalBackground implements Background
    @Override
    public void zoom(double zoomAdjust)
    {
-      info.zoom = info.zoom + (zoomAdjust / 8);
+      info.zoom = info.zoom + (zoomAdjust / 6);
    }
 
    private static DoublePoint viewToBackground(ViewInfo viewInfo, BackgroundInfo backInfo, ViewPoint viewPoint)

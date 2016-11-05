@@ -97,7 +97,7 @@ public class GameView
    public void zoomView(double zoomAdjust)
    {
       double oldZoom = viewInfo.zoom;
-      viewInfo.zoom = Math.min(ZoomMaximum, Math.max(ZoomMinimum, viewInfo.zoom - (zoomAdjust / 25)));
+      viewInfo.zoom = Math.min(ZoomMaximum, Math.max(ZoomMinimum, viewInfo.zoom * (1.0d - (zoomAdjust / 30.0d))));
       background.zoom(viewInfo.zoom - oldZoom);
    }
 
