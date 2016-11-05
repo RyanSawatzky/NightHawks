@@ -4,13 +4,18 @@ import java.awt.Point;
 
 public class DoublePoint
 {
-   public final double x;
-   public final double y;
+   public double x;
+   public double y;
    
    public DoublePoint(double x, double y)
    {
       this.x = x;
       this.y = y;
+   }
+
+   public DoublePoint(DoublePoint toCopy)
+   {
+      this(toCopy.x, toCopy.y);
    }
 
    public Point toPoint()
@@ -21,6 +26,11 @@ public class DoublePoint
    public static DoublePoint fromPoint(Point point)
    {
       return new DoublePoint(point.x, point.y);
+   }
+
+   public DoubleDimension delta(DoublePoint other)
+   {
+      return new DoubleDimension(this.x - other.x, this.y - other.y);
    }
    
    @Override

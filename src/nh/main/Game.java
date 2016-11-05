@@ -1,5 +1,6 @@
 package nh.main;
 
+import nh.view.GameView;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -13,7 +14,7 @@ import java.awt.event.MouseWheelEvent;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.swing.JPanel;
 import nh.hex.Orientation;
-import nh.map.HexMap;
+import nh.map.SquareMap;
 
 public class Game
          extends JPanel
@@ -28,8 +29,7 @@ public class Game
       super.setDoubleBuffered(true);
       
       inputQueue = new ConcurrentLinkedQueue<>();
-//      gameView = new GameView(new SquareMap(Orientation.Horizontal, 10, 10));
-      gameView = new GameView(new HexMap(Orientation.Vertical, 100));
+      gameView = new GameView(new SquareMap(Orientation.Horizontal, 10, 10));
       mouseLocation = null;
 
       GameMouseListener gameMouseListener = new GameMouseListener();
@@ -50,7 +50,10 @@ public class Game
       while((event = inputQueue.poll()) != null)
       {
          if(event instanceof ScrollMovementEvent)
-            gameView.scrollView(((ScrollMovementEvent) event).getMovement());
+         {
+            ScrollMovementEvent sme = (ScrollMovementEvent)event;
+            gameView.scrollView(this, sme.old, sme.current);
+         }
          else if(event instanceof ScrollZoomEvent)
             gameView.zoomView(((ScrollZoomEvent) event).getZoomAdjustment());
          else if(event instanceof DebugEvent)
@@ -126,9 +129,7 @@ public class Game
       {
          Point newLocation = e.getPoint();
          if(mouseLocation != null)
-         {
-            inputQueue.add(new ScrollMovementEvent(calculateDelta(mouseLocation, newLocation)));
-         }
+            inputQueue.add(new ScrollMovementEvent(mouseLocation, newLocation));
          mouseLocation = newLocation;
       }
 
@@ -166,16 +167,13 @@ public class Game
    
    private static class ScrollMovementEvent extends ScrollEvent
    {
-      private final Dimension movement;
+      public final Point old;
+      public final Point current;
       
-      public ScrollMovementEvent(Dimension movement)
+      public ScrollMovementEvent(Point old, Point current)
       {
-         this.movement = new Dimension(movement);
-      }
-      
-      public Dimension getMovement()
-      {
-         return movement;
+         this.old = old;
+         this.current = current;
       }
    }
    
