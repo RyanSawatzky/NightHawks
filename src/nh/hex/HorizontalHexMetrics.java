@@ -3,18 +3,18 @@ package nh.hex;
 import java.util.ArrayList;
 import java.util.List;
 import static nh.hex.HexMetrics.SquareRootOfThree;
+import nh.map.MapFacing;
 import nh.map.MapPoint;
+import nh.util.Coordinates;
 
 class HorizontalHexMetrics extends HexMetrics
 {
-   private final double hexSize;
    private final double height;
    private final double width;
 
-   public HorizontalHexMetrics(double hexSize)
+   public HorizontalHexMetrics()
    {
-      this.hexSize = hexSize;
-      height = hexSize * 2;
+      height = HexSize * 2;
       width = (SquareRootOfThree/2) * height;
    }
 
@@ -22,8 +22,18 @@ class HorizontalHexMetrics extends HexMetrics
    public MapPoint hexCenter(HexCoordinate hex)
    {
       OffsetCoordinate offset = hex.toOffset(Orientation.Horizontal);
-      double x = hexSize * SquareRootOfThree * (offset.col + (0.5d * (offset.row & 1)));
-      double y = hexSize * 3.0d/2.0d * offset.row;
+      double x, y;
+
+      if((offset.row & 1) == 0)
+      {
+         x = ((offset.col + 0.5d) * height * SquareRootOfThree) / 2;
+         y = (offset.row * ((height * 3) / 4)) + (height / 2);
+      }
+      else
+      {
+         x = ((offset.col + 1.0d) * height * SquareRootOfThree) / 2;
+         y = (offset.row * ((height * 3) / 4)) + (height / 2);
+      }
       return new MapPoint(x, y);
    }
 
@@ -110,9 +120,32 @@ class HorizontalHexMetrics extends HexMetrics
       return new OffsetCoordinate(colInt, rowInt).toCube(Orientation.Horizontal);
    }
 
+   private static final double RadiansPositiveQ = Coordinates.degreesToRadians(180 - 30);
+   private static final double RadiansNegativeQ = Coordinates.degreesToRadians(-30);
+   private static final double RadiansPositiveR = Coordinates.degreesToRadians(90);
+   private static final double RadiansNegativeR = Coordinates.degreesToRadians(-90);
+   private static final double RadiansNorthEast = Coordinates.degreesToRadians(30);
+   private static final double RadiansSouthWest = Coordinates.degreesToRadians(-150);
+
+   @Override
+   public double facingInRadians(MapFacing facing)
+   {
+      switch(facing)
+      {
+         case PositiveQ: return RadiansPositiveQ;
+         case NegativeQ: return RadiansNegativeQ;
+         case PositiveR: return RadiansPositiveR;
+         case NegativeR: return RadiansNegativeR;
+         case NorthEast: return RadiansNorthEast;
+         case SouthWest: return RadiansSouthWest;
+         default:
+            throw new IllegalArgumentException();
+      }
+   }
+
    public static void main(String[] args)
    {
-      HexMetrics metrics = new HorizontalHexMetrics(25.0d);
+      HexMetrics metrics = new HorizontalHexMetrics();
       CubeCoordinate cube = new CubeCoordinate(0, -100, 100);
       List<MapPoint> cubePoints = metrics.hexPoints(cube);
 

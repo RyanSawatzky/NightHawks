@@ -4,22 +4,29 @@ import nh.hex.HexMetrics;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Point;
+import java.awt.Polygon;
 import java.awt.RenderingHints;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import nh.hex.CubeCoordinate;
+import nh.hex.HexCoordinate;
 import nh.map.Map;
 import nh.hex.OffsetCoordinate;
 import nh.main.DrawInfo;
+import nh.map.MapFacing;
 import nh.map.MapInfo;
 import nh.map.MapPoint;
 import nh.map.background.Background;
 import nh.map.background.BackgroundFactory;
 import nh.map.background.BackgroundType;
+import nh.map.entity.Entity;
+import nh.map.entity.Frigate;
 import nh.util.Coordinates;
+import nh.util.DoublePolygon;
 
 public class GameView
 {
-   private static final double HexSize = 25.0d;
    private static final double ZoomInitial = 1.00d;
    private static final double ZoomMinimum = 0.320d;
    private static final double ZoomMaximum = 4.0d;
@@ -34,6 +41,9 @@ public class GameView
    private final ViewInfo viewInfo;
    private final MapInfo mapInfo;
 
+   // Entities
+   private final Set<Entity> entities;
+
    // State
    private boolean debug;
    private DrawInfo d;
@@ -46,9 +56,17 @@ public class GameView
       viewInfo = new ViewInfo();
       viewInfo.zoom = ZoomInitial;
       mapInfo = new MapInfo();
-      hexMetrics = HexMetrics.create(map.getOrientation(), HexSize);
+      hexMetrics = HexMetrics.create(map.getOrientation());
       mapOrigin = map.getMapOrigin(hexMetrics);
       mapExtent = map.getMapExtent(hexMetrics);
+      entities = new HashSet<>();
+
+      entities.add(new Frigate().setLocation(new OffsetCoordinate(0, 1)).setFacing(MapFacing.NorthEast));
+      entities.add(new Frigate().setLocation(new OffsetCoordinate(1, 0)).setFacing(MapFacing.PositiveR));
+      entities.add(new Frigate().setLocation(new OffsetCoordinate(2, 0)).setFacing(MapFacing.PositiveQ));
+      entities.add(new Frigate().setLocation(new OffsetCoordinate(2, 1)).setFacing(MapFacing.SouthWest));
+      entities.add(new Frigate().setLocation(new OffsetCoordinate(2, 2)).setFacing(MapFacing.NegativeR));
+      entities.add(new Frigate().setLocation(new OffsetCoordinate(1, 2)).setFacing(MapFacing.NegativeQ));
    }
 
    public void setDebug(boolean value)
@@ -64,6 +82,7 @@ public class GameView
       setRenderingHints();
       drawBackground();
       drawHoverHex();
+      drawEntities();
       drawHexes();
    }
 
@@ -140,7 +159,7 @@ public class GameView
          CubeCoordinate hex = hexMetrics.mapPointToHex(mapMouseLocation);
 
          if(map.isValidHex(hex))
-            fillHex(hexMetrics.hexPoints(hex));
+            fillHex(hex, HoverColor);
       }
    }
 
@@ -191,7 +210,20 @@ public class GameView
          }
       }
    }
-   
+
+   private final Color EntityHexColor = new Color(40, 110, 240, 64);
+   private void drawEntities()
+   {
+      for(Entity entity : entities)
+      {
+         MapPoint mapPoint = hexMetrics.hexCenter(entity.getLocation());
+         DoublePolygon polygon = entity.getPolygon(mapPoint, hexMetrics.facingInRadians(entity.getFacing()));
+
+         fillHex(entity.getLocation(), EntityHexColor);
+         fillPolygon(polygon);
+      }
+   }
+
    private void drawLine(MapPoint map1, MapPoint map2)
    {
       ViewPoint view1 = Coordinates.mapToView(viewInfo, mapInfo, map1);
@@ -203,8 +235,9 @@ public class GameView
       d.g.drawLine(point1.x, point1.y, point2.x, point2.y);
    }
 
-   private void fillHex(List<MapPoint> hexPoints)
+   private void fillHex(HexCoordinate hex, Color color)
    {
+      List<MapPoint> hexPoints = hexMetrics.hexPoints(hex);
       int numberPoints = hexPoints.size();
       int[] xPoints = new int[numberPoints];
       int[] yPoints = new int[numberPoints];
@@ -217,6 +250,20 @@ public class GameView
          yPoints[i] = viewPoint.y;
       }
 
+      d.g.setColor(color);
       d.g.fillPolygon(xPoints, yPoints, numberPoints);
+   }
+   
+   private void fillPolygon(DoublePolygon doublePolygon)
+   {
+      Polygon polygon = new Polygon();
+      for(MapPoint mapPoint : doublePolygon.getPoints())
+      {
+         ViewPoint viewPoint = Coordinates.mapToView(viewInfo, mapInfo, mapPoint);
+         Point point = Coordinates.viewToComponent(d.comp, viewInfo, viewPoint);
+         polygon.addPoint(point.x, point.y);
+      }
+      d.g.setColor(Color.white);
+      d.g.fillPolygon(polygon);
    }
 }

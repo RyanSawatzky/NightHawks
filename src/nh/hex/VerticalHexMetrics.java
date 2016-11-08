@@ -3,18 +3,18 @@ package nh.hex;
 import java.util.ArrayList;
 import java.util.List;
 import static nh.hex.HexMetrics.SquareRootOfThree;
+import nh.map.MapFacing;
 import nh.map.MapPoint;
+import nh.util.Coordinates;
 
 class VerticalHexMetrics extends HexMetrics
 {
-   private final double hexSize;
    private final double height;
    private final double width;
 
-   public VerticalHexMetrics(double hexSize)
+   public VerticalHexMetrics()
    {
-      this.hexSize = hexSize;
-      width = hexSize * 2;
+      width = HexSize * 2;
       height = (SquareRootOfThree/2) * width;
    }
 
@@ -22,8 +22,19 @@ class VerticalHexMetrics extends HexMetrics
    public MapPoint hexCenter(HexCoordinate hex)
    {
       OffsetCoordinate offset = hex.toOffset(Orientation.Vertical);
-      double y = hexSize * SquareRootOfThree * (offset.row + (0.5d * (offset.col & 1)));
-      double x = hexSize * 3.0d/2.0d * offset.col;
+      double x, y;
+
+      if((offset.col & 1) == 0)
+      {
+         y = (offset.row + 0.5d) * height;
+         x = ((offset.col * 3 * width) / 4) + (width / 2);
+      }
+      else
+      {
+         y = ((offset.row + 0.5d) * height) + (height / 2);
+         x = ((offset.col * 3 * width) / 4) + (width / 2);
+      }
+
       return new MapPoint(x, y);
    }
 
@@ -109,5 +120,28 @@ class VerticalHexMetrics extends HexMetrics
       }
 
       return new OffsetCoordinate(colInt, rowInt).toCube(Orientation.Vertical);
+   }
+
+   private static final double RadiansPositiveQ = Coordinates.degreesToRadians(180);
+   private static final double RadiansNegativeQ = Coordinates.degreesToRadians(0);
+   private static final double RadiansPositiveR = Coordinates.degreesToRadians(90 + 30);
+   private static final double RadiansNegativeR = Coordinates.degreesToRadians(-90 + 30);
+   private static final double RadiansNorthEast = Coordinates.degreesToRadians(60);
+   private static final double RadiansSouthWest = Coordinates.degreesToRadians(-120);
+
+   @Override
+   public double facingInRadians(MapFacing facing)
+   {
+      switch(facing)
+      {
+         case PositiveQ: return RadiansPositiveQ;
+         case NegativeQ: return RadiansNegativeQ;
+         case PositiveR: return RadiansPositiveR;
+         case NegativeR: return RadiansNegativeR;
+         case NorthEast: return RadiansNorthEast;
+         case SouthWest: return RadiansSouthWest;
+         default:
+            throw new IllegalArgumentException();
+      }
    }
 }

@@ -22,7 +22,14 @@ public class DoublePoint
    {
       return DoublePoint.toPoint(x, y);
    }
-   
+
+   public DoublePoint translate(DoublePoint otherPoint)
+   {
+      this.x += otherPoint.x;
+      this.y += otherPoint.y;
+      return this;
+   }
+
    public static DoublePoint fromPoint(Point point)
    {
       return new DoublePoint(point.x, point.y);

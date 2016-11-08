@@ -6,6 +6,7 @@
 package nh.hex;
 
 import java.util.List;
+import nh.map.MapFacing;
 import nh.map.MapPoint;
 import nh.util.DoublePoint;
 
@@ -15,11 +16,13 @@ import nh.util.DoublePoint;
  */
 public abstract class HexMetrics
 {
+   public static final double HexSize = 25.0d;
    public static final double SquareRootOfThree = Math.sqrt(3.0d);
 
    public abstract MapPoint hexCenter(HexCoordinate hex);
    public abstract List<MapPoint> hexPoints(HexCoordinate hex);
    public abstract CubeCoordinate mapPointToHex(double x, double y);
+   public abstract double facingInRadians(MapFacing facing);
 
    public CubeCoordinate mapPointToHex(DoublePoint point)
    {
@@ -46,11 +49,11 @@ public abstract class HexMetrics
       return new CubeCoordinate((int)rx, (int)ry, (int)rz);
    }
 
-   public static final HexMetrics create(Orientation orientation, double hexSize)
+   public static final HexMetrics create(Orientation orientation)
    {
       if(orientation.isHorizontal())
-         return new HorizontalHexMetrics(hexSize);
+         return new HorizontalHexMetrics();
       else
-         return new VerticalHexMetrics(hexSize);
+         return new VerticalHexMetrics();
    }
 }

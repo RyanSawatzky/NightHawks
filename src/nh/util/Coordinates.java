@@ -47,4 +47,23 @@ public class Coordinates
       return new MapPoint(mapInfo.center.x - ((viewInfo.center.x - viewPoint.x) / viewInfo.zoom),
                           mapInfo.center.y - ((viewInfo.center.y - viewPoint.y) / viewInfo.zoom));
    }
+
+   public static PolarPoint cartesianToPolar(DoublePoint cartesian)
+   {
+      double radian = Math.sqrt((cartesian.x * cartesian.x) + (cartesian.y * cartesian.y));
+      double theta = Math.atan2(cartesian.y, cartesian.x);
+      return new PolarPoint(radian, theta);
+   }
+
+   public static DoublePoint polarToCartesian(PolarPoint polar)
+   {
+      double x = polar.radial * Math.cos(polar.theta);
+      double y = polar.radial * Math.sin(polar.theta);
+      return new DoublePoint(x, y);
+   }
+   
+   public static double degreesToRadians(double degrees)
+   {
+      return ((degrees/180.0d)*Math.PI);
+   }
 }
