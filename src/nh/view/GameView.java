@@ -212,6 +212,7 @@ public class GameView
    }
 
    private final Color EntityHexColor = new Color(40, 110, 240, 64);
+   private final Color EntityColor = new Color(110, 155, 245);
    private void drawEntities()
    {
       for(Entity entity : entities)
@@ -219,8 +220,8 @@ public class GameView
          MapPoint mapPoint = hexMetrics.hexCenter(entity.getLocation());
          DoublePolygon polygon = entity.getPolygon(mapPoint, hexMetrics.facingInRadians(entity.getFacing()));
 
-         fillHex(entity.getLocation(), EntityHexColor);
-         fillPolygon(polygon);
+//         fillHex(entity.getLocation(), EntityHexColor);
+         fillPolygon(polygon, EntityColor);
       }
    }
 
@@ -254,7 +255,7 @@ public class GameView
       d.g.fillPolygon(xPoints, yPoints, numberPoints);
    }
    
-   private void fillPolygon(DoublePolygon doublePolygon)
+   private void fillPolygon(DoublePolygon doublePolygon, Color color)
    {
       Polygon polygon = new Polygon();
       for(MapPoint mapPoint : doublePolygon.getPoints())
@@ -263,7 +264,7 @@ public class GameView
          Point point = Coordinates.viewToComponent(d.comp, viewInfo, viewPoint);
          polygon.addPoint(point.x, point.y);
       }
-      d.g.setColor(Color.white);
+      d.g.setColor(color);
       d.g.fillPolygon(polygon);
    }
 }

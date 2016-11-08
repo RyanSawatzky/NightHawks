@@ -15,7 +15,7 @@ public class VerticalHexMetricsTest
    @Test
    public void testPointToHex1()
    {
-      HexMetrics metrics = new VerticalHexMetrics(25.0d);
+      HexMetrics metrics = new VerticalHexMetrics();
       CubeCoordinate cube = new CubeCoordinate(100, -100, 0);
 
       Assert.assertEquals(cube, metrics.mapPointToHex(new MapPoint(3786.02d, 2207.7854d)));
@@ -29,7 +29,7 @@ public class VerticalHexMetricsTest
    @Test
    public void testPointToHex2()
    {
-      HexMetrics metrics = new VerticalHexMetrics(25.0d);
+      HexMetrics metrics = new VerticalHexMetrics();
       CubeCoordinate cube = new CubeCoordinate(99, -100, 1);
 
       Assert.assertEquals(cube, metrics.mapPointToHex(new MapPoint(3749.27d, 2229.78d)));
