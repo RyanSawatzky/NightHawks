@@ -136,8 +136,22 @@ public class Game
       @Override
       public void mouseWheelMoved(MouseWheelEvent e)
       {
-         inputQueue.add(new ScrollZoomEvent(e.getPreciseWheelRotation()));
          mouseLocation = e.getPoint();
+         if(mouseLocation != null)
+         {
+            Point compLocation = Game.this.getLocation();
+            Dimension compSize = Game.this.getSize();
+            Point center = new Point((compSize.width / 2) + compLocation.x,
+                                     (compSize.height / 2) + compLocation.y);
+
+            int deltaX = mouseLocation.x - center.x;
+            int deltaY = mouseLocation.y - center.y;
+            deltaX /= 32;
+            deltaY /= 32;
+            Point newLocation = new Point(center.x + deltaX, center.y + deltaY);
+            inputQueue.add(new ScrollMovementEvent(newLocation, center));
+         }
+         inputQueue.add(new ScrollZoomEvent(e.getPreciseWheelRotation()));
       }
       
       private Dimension calculateDelta(Point oldPoint, Point newPoint)
