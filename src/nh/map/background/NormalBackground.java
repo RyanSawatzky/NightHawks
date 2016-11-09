@@ -29,8 +29,8 @@ public class NormalBackground implements Background
    @Override
    public void scroll(DoubleDimension movement)
    {
-      info.center.x += (movement.width / (info.zoom * 16));
-      info.center.y += (movement.height / (info.zoom * 16));
+      info.center.x -= (movement.width / (info.zoom * 16));
+      info.center.y -= (movement.height / (info.zoom * 16));
    }
    
    @Override
@@ -101,7 +101,27 @@ public class NormalBackground implements Background
          ViewPoint starInView = backgroundToView(viewInfo, info, starPoint);
          Point starInComp = Coordinates.viewToComponent(d.comp, viewInfo, starInView);
 
-         d.g.setColor(new Color(brightness, brightness, brightness));
+         int red = brightness;
+         int green = brightness;
+         int blue = brightness;
+         int dominantColor = random.nextInt(3);
+         if(dominantColor == 0)
+         {
+            green -= random.nextInt(10);
+            blue -= random.nextInt(10);
+         }
+         else if(dominantColor == 1)
+         {
+            red -= random.nextInt(10);
+            blue -= random.nextInt(10);
+         }
+         else
+         {
+            red -= random.nextInt(10);
+            green -= random.nextInt(10);
+         }
+
+         d.g.setColor(new Color(red, blue, green));
          d.g.drawLine(starInComp.x, starInComp.y, starInComp.x, starInComp.y);
       }
    }
